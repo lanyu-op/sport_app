@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<!--App自定义的css-->
+		<link rel="stylesheet" type="text/css" href="../css/app.css"/>
+		<style>
+
+		    .timeimg{
+		    	content:'\201D';
+		    }
+		    
+			.mui-card .mui-control-content {
+				padding: 10px;
+				
+			}
+			.mui-control-content {
+				
+				#height: 1000px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div class="mui-content">
+			
+			<div id="pullrefresh" >
+				
+				<div id="item1"  class="mui-control-content mui-active">
+					<div  class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul class="mui-table-view">
+						
+							</ul>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+
+	
+			
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/jquery-1.9.1.js"></script>
+		<script src="../js/common.js"></script>
+         
+
+
+
+		<script>
+			function initData() {
+				mui.ajax({
+					type: "post",
+					url: _baseUrl + "/api/user",
+					data: {
+						token: plus.storage.getItem(_user_token)
+					},
+					async: true,
+					dataType: "json",
+					success: function(data) {
+						var user = data.detail.user;
+						var topics = data.detail.topics;
+						var collects = data.detail.collects;
+						$("#avatar").attr("src", user.avatar);
+						$("#nickname").html(user.nickname);
+						$("#score").html("积分：" + user.score);
+						
+						var topics_ul = $("#topics_ul");
+						topics_ul.html('<li class="mui-table-view-divider">最近话题</li>');
+						mui.each(topics, function(index, _data){
+							var inTime = formatDateTime(_data.in_time);
+							var html = '<li class="mui-table-view-cell"><a href="javascript:topic_detail(\''+_data.id+'\')">'+
+										'<span class="topic_title ellipsis-public">'+_data.title+'</span>'+
+										'<span class="topic_nickname">'+plus.storage.getItem(_user_nickname)+'</span>'+
+										'<span class="topic_in_time">'+inTime+'</span>'+
+										'</a></li>';
+							topics_ul.append(html);
+						});
+						var collets_ul = $("#collets_ul");
+						collets_ul.html('<li class="mui-table-view-divider">收藏话题</li>');
+						mui.each(collects, function(index, _data){
+							var inTime = formatDateTime(_data.in_time);
+							var html = '<li class="mui-table-view-cell"><a href="javascript:topic_detail(\''+_data.id+'\')">'+
+										'<span class="topic_title ellipsis-public">'+_data.title+'</span>'+
+										'<span class="topic_nickname">'+_data.nickname+'</span>'+
+										'<span class="topic_in_time">'+inTime+'</span>'+
+										'</a></li>';
+							collets_ul.append(html);
+						});
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+					}
+				});
+			}		
+			function sendongtai(){
+			    $.ajax({
+			        url:"http://www.360lzy.com/markethelper/lanyu_sport/index/SendSms",
+			        type:"post",
+			        data:"tx=ttttttt",
+			        success: function (data) {
+			                if(data == "faild"){
+			                    alert("获取数据失败");
+			                }else if(data == 0){
+			                    $(".chagednum").html('0');
+			                }else{
+			                    var tmp = eval("("+data+")");
+			                    for(var i in tmp){
+			                        $("#"+i).html(tmp[i]);
+			                    }
+			                }
+			        }
+			        
+			    });
+			}
+		
+		
+		
+					var table = document.body.querySelector('.mui-table-view');
+					//alert(table);
+					var cells = document.body.querySelectorAll('.mui-table-view-cell');
+						var li = document.createElement('li');
+						li.className = 'mui-table-view-cell mui-media';
+						//li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
+							li.innerHTML ='	<a href="#">'+
+									'<img class="mui-media-object mui-pull-left headimg" src="http://dcloudio.github.io/mui/assets/img/cbd.jpg">'+
+									'<div class="mui-media-body">'+
+									'	CBD'+
+									'	<p class="mui-ellipsis"><span class="mui-icon mui-icon-time"></span>今天10:29</p>'+
+									'	<p class="mui-ellipsis-2">烤炉模式的城，到黄昏，如同打翻的调色盘一般.</p>'+
+									'</div>'+
+								'</a>';					
+						var li_buttom = document.createElement('li');
+						li_buttom.className = 'mui-table-view-cell mui-media';
+						//li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
+
+								
+							li_buttom.innerHTML ='	<a href="#">'+
+									
+									'<div class="mui-media-body" style=" display:block;text-align:center;">'+
+									'<span class="mui-icon mui-icon-dianzan" style="color:#8f8f94;float:left;margin-left: 10px;"></span>'+
+									'<span class="mui-icon mui-icon-liuyan" style="color:#8f8f94;"></span>'+
+									'<span class="mui-icon mui-icon-zhuanfa" style="float:right;margin-right: 10px;color: #8f8f94;"></span>'+
+									'</div>'+
+								'</a>';								
+						//下拉刷新，新纪录插到最前面；
+						var div1 = document.createElement('div');
+						div1.innerHTML ='<li class="mui-table-view-cell mui-media"><p>我就是我：没吃饭！<p>呵呵姜：是吗？<p><a>查看全部23条评论</a></li>';
+						table.insertBefore(div1, table.firstChild);
+						table.insertBefore(li_buttom, table.firstChild);
+						table.insertBefore(li, table.firstChild);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			mui.init({
+				swipeBack: false,
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						contentrefresh: '正在加载...',
+						callback: pulldownRefresh
+					},
+					up: {
+						contentrefresh: '正在加载...',
+						callback: pullupRefresh
+					}
+				}
+			});
+			
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					var table = document.body.querySelector('.mui-table-view');
+					//alert(table);
+					var cells = document.body.querySelectorAll('.mui-table-view-cell');
+					 $.getJSON("http://www.360lzy.com/markethelper/lanyu_sport/index/SendSms?tx=xxp",function(data){ 
+
+					 });
+					for (var i = cells.length, len = i + 3; i < len; i++) {
+						var li = document.createElement('li');
+						li.className = 'mui-table-view-cell mui-media';
+						//li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
+							li.innerHTML ='	<a href="#">'+
+									'<img class="mui-media-object mui-pull-left headimg" src="http://dcloudio.github.io/mui/assets/img/cbd.jpg">'+
+									'<div class="mui-media-body">'+
+									'	CBD'+
+									'	<p class="mui-ellipsis"><span class="mui-icon mui-icon-time"></span>今天10:29</p>'+
+									'	<p class="mui-ellipsis-2">去哪里玩啊周一，大家说呢？？？？.</p>'+
+									'</div>'+
+								'</a>';					
+						var li_buttom = document.createElement('li');
+						li_buttom.className = 'mui-table-view-cell mui-media';
+						//li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
+
+								
+							li_buttom.innerHTML ='	<a href="#">'+
+									
+									'<div class="mui-media-body" style=" display:block;text-align:center;">'+
+									'<span class="mui-icon mui-icon-dianzan" style="color:#8f8f94;float:left;margin-left: 10px;"></span>'+
+									'<span class="mui-icon mui-icon-liuyan" style="color:#8f8f94;"></span>'+
+									'<span class="mui-icon mui-icon-zhuanfa" style="float:right;margin-right: 10px;color: #8f8f94;"></span>'+
+									'</div>'+
+								'</a>';								
+						//下拉刷新，新纪录插到最前面；
+						var div1 = document.createElement('div');
+						div1.innerHTML ='<li class="mui-table-view-cell mui-media"><p>小可乐：去爬上吧！<p>哈蜜蜜：还是宅在家比较好。<p><a>查看全部23条评论</a></li>';
+						table.insertBefore(div1, table.firstChild);
+						table.insertBefore(li_buttom, table.firstChild);
+						table.insertBefore(li, table.firstChild);
+					}
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+				}, 1000);
+			}
+			var count = 0;
+			/**
+			 * 上拉加载具体业务实现
+			 */
+			function pullupRefresh() {
+				setTimeout(function() {
+					mui('#pullrefresh').pullRefresh().endPullupToRefresh((++count > 2)); //参数为true代表没有更多数据了。
+					var table = document.body.querySelector('.mui-table-view');
+					var cells = document.body.querySelectorAll('.mui-table-view-cell');
+					for (var i = cells.length, len = i + 20; i < len; i++) {
+						var li = document.createElement('li');
+						li.className = 'mui-table-view-cell mui-media';
+							li.innerHTML ='	<a href="#">'+
+									'<img class="mui-media-object mui-pull-left headimg" src="http://dcloudio.github.io/mui/assets/img/cbd.jpg">'+
+									'<div class="mui-media-body">'+
+									'	CBD'+
+									'	<p class="mui-ellipsis"><span class="mui-icon mui-icon-time"></span>今天10:29</p>'+
+									'	<p class="mui-ellipsis">烤炉模式的城，到黄昏，如同打翻的调色盘一般.</p>'+
+									'</div>'+
+								'</a>';
+						table.appendChild(li);
+					}
+				}, 1000);
+			}
+		</script>
+
+	</body>
+
+</html>
