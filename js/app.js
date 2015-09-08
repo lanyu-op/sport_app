@@ -32,6 +32,7 @@
 	};
 
 	owner.createState = function(name,sex,logomin,logomax,city, callback) {
+		callback = callback || $.noop;
 		//alert(name+sex+logo+city);
 		var state = owner.getState();
 		state.account = name;
@@ -53,15 +54,10 @@
 		regInfo = regInfo || {};
 		regInfo.account = regInfo.account || '';
 		regInfo.password = regInfo.password || '';
-		if (regInfo.account.length < 5) {
-			return callback('用户名最短需要 5 个字符');
-		}
-		if (regInfo.password.length < 6) {
-			return callback('密码最短需要 6 个字符');
-		}
-		if (!checkEmail(regInfo.email)) {
-			return callback('邮箱地址不合法');
-		}
+
+		//if (!checkEmail(regInfo.email)) {
+		//	return callback('邮箱地址不合法');
+		//}
 		var users = JSON.parse(localStorage.getItem('$users') || '[]');
 		users.push(regInfo);
 		localStorage.setItem('$users', JSON.stringify(users));

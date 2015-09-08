@@ -110,6 +110,8 @@
 		<script src="js/mui.min.js"></script>
 		<script src="js/mui.enterfocus.js"></script>
 		<script src="js/app.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/sha1.js"></script>		
 		<script>
 			(function($, doc) {
 				$.init({
@@ -119,15 +121,16 @@
 					plus.screen.lockOrientation("portrait-primary");
 					var settings = app.getSettings();
 					var state = app.getState();
-					var mainPage = $.preload({
-						"id": 'main',
-						"url": 'main.html'
-					});
+					//var mainPage = $.preload({
+					//	"id": 'main',
+					//	"url": 'main.html'
+					//});
 					var toMain = function() {
-						$.fire(mainPage, 'show', null);
+						//$.fire(mainPage, 'show', null);
 						setTimeout(function() {
 							$.openWindow({
 								id: 'main',
+								"url": 'main.html',
 								show: {
 									aniShow: 'pop-in'
 								},
@@ -215,7 +218,49 @@
 					var autoLoginButton = doc.getElementById("autoLogin");
 					var regButton = doc.getElementById('reg');
 					var forgetButton = doc.getElementById('forgetPassword');
+
+
 					loginButton.addEventListener('tap', function(event) {
+					var shapassword=hex_sha1(passwordBox.value);
+					var regInfo = {
+							account: accountBox.value,
+							password: shapassword,
+							email: ''
+					};						
+
+//提交服务器
+					mui.ajax({
+						type: "post",
+						url: _baseUrl + "/index/ValidateUser",
+						data: {
+							name: accountBox.value,
+							pwd: shapassword,
+							sex: '',
+							city: '',
+							logomax: '',
+							logomin: '',
+						},
+						async: true,
+						dataType: "json",
+						success: function(data) {
+							
+							if(data.code == 100) {
+
+//								plus.webview.getWebviewById('create.html').close();
+								app.reg(regInfo, function(err) {
+									if (err) {
+										plus.nativeUI.toast(err);
+										return;
+									}
+									plus.nativeUI.toast(data.state);
+									toMain();
+								});
+
+							} else if(data.code == 200){
+								plus.nativeUI.toast(data.state);
+							}
+						}
+					});		
 						var loginInfo = {
 							account: accountBox.value,
 							password: passwordBox.value
